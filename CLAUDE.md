@@ -49,13 +49,43 @@ data plus an optional AI-generated narrative layer.
 
 ## CSS system
 
-All colours are CSS custom properties declared once in `:root`
-(`--color-bg`, `--color-surface`, `--color-text-primary`,
-`--color-text-secondary`, `--color-accent-warm`, `--color-accent-cool`,
-`--color-border`). **No hardcoded hex values anywhere outside `:root`.** A
-full visual identity (palette, type, spacing tokens, component style) will
-be supplied in a future session — it should be a drop-in replacement of the
-`:root` block plus targeted component-class tweaks, nothing structural.
+Visual identity is the **Emile Dupont personal brand design system**
+(warm pastel palette + technological edge, on a dark minimalist base —
+sourced from a Claude Design handoff bundle for
+[epdupont-oss/personal-website](https://github.com/epdupont-oss/personal-website)).
+Applied as a `:root` token swap + component-level tweaks only, nothing
+structural, per the original plan.
+
+- All colours are CSS custom properties declared once in `:root`.
+  **No hardcoded hex values anywhere outside `:root`** (except the
+  necessarily-hardcoded copies in `functions/api/og.js`, which can't read
+  page CSS, and the Chart.js dataset colors in `index.html`'s `<script>`,
+  which can't reference CSS vars — both are kept in sync with the tokens by
+  hand when the palette changes).
+- **Colors**: `--color-bg #0B0A09` (warm near-black) · `--color-surface
+  #121110` · `--color-text-primary #F7F2EA` · `--color-text-secondary
+  #6E665D` · `--color-border #2B2724` / `--color-border-strong #3A352F`.
+  Accents: `--color-accent-warm #FF8A65` (coral — primary CTA, summer
+  warming, CO₂) · `--color-accent-cool #7FB6C4` (mist teal — winter
+  warming, secondary) · `--color-accent-tech #A77DF0` (violet — the AI
+  narrative feature only) · `--color-danger #F0736B` (distinct from the
+  warm brand accent — used for real error states, not just "warm").
+- **Type**: `--font-display` Space Grotesk (headings, stat values) ·
+  `--font-sans` system stack (body copy) · `--font-mono` Space Mono (every
+  label, button, metadata line, citation — uppercase, letter-spaced).
+  Loaded via Google Fonts `<link>` in `<head>`.
+- **Shape**: sharp by default (`--radius: 0`) — the brand is "a terminal
+  that learned warmth," structure comes from 1px hairline borders, not
+  rounded corners or shadows. Inputs get a small `--radius-input: 4px`.
+  Pills (`--radius-pill`) are reserved for transient status chips like
+  `.copy-tooltip`.
+- **Section labels**: numbered mono markers (`00 / your numbers`, `01 /
+  spiral`, `02 / decades`, `03 / global context`) above each results
+  section — the brand's signature wayfinding motif, lowercase, index
+  colored with the warm accent. See `.section-label` in `index.html`.
+- If the upstream design system changes, re-derive token values from its
+  `tokens/colors.css` / `tokens/typography.css` / `tokens/effects.css` and
+  reapply by hand — there's no automated sync.
 
 ## Data computation notes
 

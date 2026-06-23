@@ -31,7 +31,7 @@ let cachedFont = null;
 async function loadFont() {
   if (cachedFont) return cachedFont;
   const res = await fetch(
-    "https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-700-normal.ttf"
+    "https://cdn.jsdelivr.net/fontsource/fonts/space-grotesk@latest/latin-700-normal.ttf"
   );
   cachedFont = await res.arrayBuffer();
   return cachedFont;
@@ -53,7 +53,7 @@ function buildCard({ city, year, winterWarming, summerWarming, co2 }) {
         {
           type: "div",
           props: {
-            style: { fontSize: 22, color: "#9aa3ad", marginBottom: 6 },
+            style: { fontSize: 22, color: "#A9A095", marginBottom: 6 },
             children: label,
           },
         },
@@ -70,9 +70,9 @@ function buildCard({ city, year, winterWarming, summerWarming, co2 }) {
 
   const stats = hasStats
     ? [
-        statBlock("Summers", `+${Number(summerWarming).toFixed(1)}°C`, "#c2563d"),
-        statBlock("Winters", `+${Number(winterWarming).toFixed(1)}°C`, "#3b6fa6"),
-        statBlock("CO2 rise", `+${Math.round(co2)} ppm`, "#c08a4e"),
+        statBlock("Summers", `+${Number(summerWarming).toFixed(1)}°C`, "#FF8A65"),
+        statBlock("Winters", `+${Number(winterWarming).toFixed(1)}°C`, "#7FB6C4"),
+        statBlock("CO2 rise", `+${Math.round(co2)} ppm`, "#F4B85E"),
       ]
     : [];
 
@@ -85,13 +85,13 @@ function buildCard({ city, year, winterWarming, summerWarming, co2 }) {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        backgroundColor: "#0d1117",
+        backgroundColor: "#0B0A09",
         padding: 64,
-        fontFamily: "Inter",
+        fontFamily: "Space Grotesk",
         position: "relative",
       },
       children: [
-        // top-right decorative spiral
+        // top-right decorative rings — warm pastel + technological edge
         {
           type: "div",
           props: {
@@ -102,7 +102,7 @@ function buildCard({ city, year, winterWarming, summerWarming, co2 }) {
               width: 140,
               height: 140,
               borderRadius: "50%",
-              border: "6px solid #a82e2e",
+              border: "6px solid #A77DF0",
               display: "flex",
             },
           },
@@ -117,7 +117,7 @@ function buildCard({ city, year, winterWarming, summerWarming, co2 }) {
               width: 104,
               height: 104,
               borderRadius: "50%",
-              border: "6px solid #c08a4e",
+              border: "6px solid #FF8A65",
               display: "flex",
             },
           },
@@ -132,7 +132,7 @@ function buildCard({ city, year, winterWarming, summerWarming, co2 }) {
               width: 68,
               height: 68,
               borderRadius: "50%",
-              border: "6px solid #3b6fa6",
+              border: "6px solid #7FB6C4",
               display: "flex",
             },
           },
@@ -146,7 +146,7 @@ function buildCard({ city, year, winterWarming, summerWarming, co2 }) {
               {
                 type: "div",
                 props: {
-                  style: { fontSize: 40, fontWeight: 700, color: "#f0f2f4" },
+                  style: { fontSize: 40, fontWeight: 700, color: "#F7F2EA", letterSpacing: -1 },
                   children: "Born Into Change",
                 },
               },
@@ -155,7 +155,7 @@ function buildCard({ city, year, winterWarming, summerWarming, co2 }) {
                 props: {
                   style: {
                     fontSize: 26,
-                    color: "#c9cfd6",
+                    color: "#A9A095",
                     marginTop: 14,
                   },
                   children: `${city} · Born ${year}`,
@@ -190,14 +190,14 @@ function buildCard({ city, year, winterWarming, summerWarming, co2 }) {
                     {
                       type: "div",
                       props: {
-                        style: { fontSize: 22, color: "#7d8590", fontStyle: "italic" },
+                        style: { fontSize: 22, color: "#8A8278", fontStyle: "italic" },
                         children: "Climate change, measured in your lifetime.",
                       },
                     },
                     {
                       type: "div",
                       props: {
-                        style: { fontSize: 14, color: "#5c636b", marginTop: 8 },
+                        style: { fontSize: 14, color: "#6E665D", marginTop: 8 },
                         children: "An idea of epdupont@gmail.com — linkedin.com/in/emiledupont",
                       },
                     },
@@ -211,12 +211,12 @@ function buildCard({ city, year, winterWarming, summerWarming, co2 }) {
                   children: [
                     {
                       type: "div",
-                      props: { style: { fontSize: 20, color: "#c9cfd6" }, children: "born.into.change" },
+                      props: { style: { fontSize: 20, color: "#A9A095" }, children: "born.into.change" },
                     },
                     {
                       type: "div",
                       props: {
-                        style: { fontSize: 16, color: "#7d8590", marginTop: 4 },
+                        style: { fontSize: 16, color: "#8A8278", marginTop: 4 },
                         children: "Data: Open-Meteo · NASA · NOAA",
                       },
                     },
@@ -254,7 +254,7 @@ export async function onRequestGet({ request }) {
     const svg = await satori(buildCard({ city, year, winterWarming, summerWarming, co2 }), {
       width: WIDTH,
       height: HEIGHT,
-      fonts: [{ name: "Inter", data: font, weight: 700, style: "normal" }],
+      fonts: [{ name: "Space Grotesk", data: font, weight: 700, style: "normal" }],
     });
 
     const resvg = new Resvg(svg, { fitTo: { mode: "width", value: WIDTH } });

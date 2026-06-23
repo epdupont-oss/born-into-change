@@ -16,17 +16,49 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
-<style>
-  :root {
-    --color-bg: #0d1117;
-    --color-surface: #161b22;
-    --color-text-primary: #f0f2f4;
-    --color-text-secondary: #9aa3ad;
-    --color-accent-warm: #c2563d;
-    --color-accent-cool: #3b6fa6;
-    --color-border: #2a313a;
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
 
-    --radius: 12px;
+<style>
+  /*
+   * Visual identity: Emile Dupont personal brand design system
+   * (warm pastel palette + technological edge, on a dark minimalist base).
+   * This :root block + the component-level tweaks below are the full
+   * extent of the swap — see CLAUDE.md "CSS system" for the source.
+   */
+  :root {
+    /* ---- Brand tokens ---- */
+    --color-bg: #0B0A09;
+    --color-surface: #121110;
+    --color-surface-2: #181614;
+    --color-text-primary: #F7F2EA;
+    --color-text-secondary: #6E665D;
+    --color-border: #2B2724;
+    --color-border-strong: #3A352F;
+
+    --color-accent-warm: #FF8A65;   /* coral — primary, summer, CO2 */
+    --color-accent-warm-hover: #FFA585;
+    --color-accent-warm-soft: rgba(255, 138, 101, 0.12);
+    --color-accent-warm-contrast: #2A130A;
+
+    --color-accent-cool: #7FB6C4;   /* mist teal — winter, secondary */
+    --color-accent-cool-soft: rgba(127, 182, 196, 0.14);
+
+    --color-accent-tech: #A77DF0;   /* violet — AI / technological feature */
+    --color-accent-tech-soft: rgba(167, 125, 240, 0.14);
+
+    --color-danger: #F0736B;        /* distinct from the warm brand accent */
+
+    --font-display: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: "Space Mono", ui-monospace, "Courier New", Courier, monospace;
+
+    --radius: 0;          /* the brand is sharp/terminal by default */
+    --radius-input: 4px;
+    --radius-pill: 999px;
+    --ease-fast: 0.15s;
+
     --space-xs: 0.5rem;
     --space-sm: 1rem;
     --space-md: 1.5rem;
@@ -41,10 +73,28 @@
     padding: 0;
     background: var(--color-bg);
     color: var(--color-text-primary);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: var(--font-sans);
+    font-size: 15px;
   }
 
-  a { color: var(--color-accent-cool); }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  a { color: var(--color-accent-warm); }
+
+  .section-label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-xs);
+  }
+
+  .section-label .n { color: var(--color-accent-warm); }
 
   .screen {
     min-height: 100vh;
@@ -91,52 +141,68 @@
   }
 
   label {
-    font-size: 0.85rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
     color: var(--color-text-secondary);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
   }
 
   input[type="text"],
   input[type="number"] {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
     color: var(--color-text-primary);
-    border-radius: var(--radius);
+    border-radius: var(--radius-input);
     padding: 0.75rem 1rem;
-    font-size: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    transition: border-color var(--ease-fast);
   }
 
   input:focus {
     outline: none;
-    border-color: var(--color-accent-cool);
+    border-color: var(--color-accent-warm);
   }
 
   button {
     cursor: pointer;
-    font-family: inherit;
+    font-family: var(--font-mono);
   }
 
   .btn-primary {
     background: var(--color-accent-warm);
-    color: var(--color-text-primary);
-    border: none;
+    color: var(--color-accent-warm-contrast);
+    border: 1px solid var(--color-accent-warm);
     border-radius: var(--radius);
     padding: 0.85rem 1.5rem;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
     margin-top: var(--space-xs);
+    transition: background var(--ease-fast), border-color var(--ease-fast);
   }
+
+  .btn-primary:hover { background: var(--color-accent-warm-hover); border-color: var(--color-accent-warm-hover); }
 
   .btn-secondary {
     background: transparent;
-    color: var(--color-text-primary);
-    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border-strong);
     border-radius: var(--radius);
     padding: 0.5rem 1rem;
-    font-size: 0.9rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: color var(--ease-fast), border-color var(--ease-fast);
   }
 
+  .btn-secondary:hover { color: var(--color-text-primary); border-color: var(--color-text-secondary); }
+
   .error-message {
-    color: var(--color-accent-warm);
+    color: var(--color-danger);
+    font-family: var(--font-sans);
     font-size: 0.9rem;
     min-height: 1.2em;
   }
@@ -144,19 +210,25 @@
   .sources-footer {
     margin-top: var(--space-xl);
     color: var(--color-text-secondary);
-    font-size: 0.8rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
   }
 
   .project-signature {
     margin-top: var(--space-sm);
     color: var(--color-text-secondary);
-    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.02em;
   }
 
   .project-signature a {
     color: var(--color-text-secondary);
     text-decoration: underline;
   }
+
+  .project-signature a:hover { color: var(--color-text-primary); }
 
   /* ---------- Step 2: Loading screen ---------- */
   #loading-screen {
@@ -170,8 +242,7 @@
 
   .progress-bar {
     width: 220px;
-    height: 4px;
-    border-radius: 4px;
+    height: 2px;
     background: var(--color-surface);
     overflow: hidden;
   }
@@ -179,8 +250,7 @@
   .progress-bar-fill {
     height: 100%;
     width: 40%;
-    background: var(--color-accent-cool);
-    border-radius: 4px;
+    background: var(--color-accent-warm);
     animation: progress-slide 1.4s ease-in-out infinite;
   }
 
@@ -191,7 +261,9 @@
 
   .loading-status {
     color: var(--color-text-secondary);
-    font-size: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
     min-height: 1.5em;
   }
 
@@ -216,7 +288,9 @@
   }
 
   .share-bar .city-year {
-    font-weight: 600;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    letter-spacing: 0.02em;
   }
 
   .share-bar .actions {
@@ -229,11 +303,14 @@
     position: absolute;
     top: -2rem;
     right: 0;
-    background: var(--color-accent-cool);
-    color: var(--color-text-primary);
-    font-size: 0.75rem;
-    padding: 0.25rem 0.6rem;
-    border-radius: 6px;
+    background: var(--color-accent-warm);
+    color: var(--color-accent-warm-contrast);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-pill);
     opacity: 0;
     transition: opacity 0.2s ease;
     pointer-events: none;
@@ -250,12 +327,15 @@
 
   section.panel h2 {
     font-size: 1.4rem;
-    margin-bottom: var(--space-xs);
+    font-weight: 600;
+    margin: 0;
   }
 
   .source-cite {
     color: var(--color-text-secondary);
-    font-size: 0.8rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
     margin-top: var(--space-xs);
   }
 
@@ -286,11 +366,15 @@
 
   .stat-label {
     color: var(--color-text-secondary);
-    font-size: 0.85rem;
-    margin-bottom: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
   }
 
   .stat-value {
+    font-family: var(--font-display);
     font-size: 2.2rem;
     font-weight: 700;
   }
@@ -377,16 +461,23 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     padding: var(--space-sm);
+    transition: border-color var(--ease-fast);
+  }
+
+  .decade-card:hover {
+    border-color: var(--color-text-secondary);
   }
 
   .decade-card .decade-label {
+    font-family: var(--font-display);
     font-weight: 700;
     font-size: 1.1rem;
   }
 
   .decade-card .decade-anomaly {
     margin-top: 0.25rem;
-    font-size: 0.95rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
     color: var(--color-text-secondary);
   }
 
@@ -396,7 +487,6 @@
   .narrative-skeleton {
     margin-top: var(--space-sm);
     height: 3.2em;
-    border-radius: 6px;
     background: linear-gradient(90deg, var(--color-border) 25%, var(--color-bg) 50%, var(--color-border) 75%);
     background-size: 200% 100%;
     animation: skeleton-shimmer 1.5s infinite;
@@ -417,17 +507,25 @@
   #generate-story-btn {
     display: block;
     margin: var(--space-sm) auto 0;
-    background: var(--color-accent-cool);
-    color: var(--color-text-primary);
-    border: none;
+    background: var(--color-accent-tech-soft);
+    color: var(--color-accent-tech);
+    border: 1px solid var(--color-accent-tech);
     border-radius: var(--radius);
     padding: 0.75rem 1.5rem;
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: background var(--ease-fast), color var(--ease-fast);
+  }
+
+  #generate-story-btn:hover:not(:disabled) {
+    background: var(--color-accent-tech);
+    color: var(--color-accent-warm-contrast);
   }
 
   #generate-story-btn:disabled {
-    opacity: 0.6;
+    opacity: 0.4;
     cursor: default;
   }
 
@@ -439,7 +537,7 @@
   /* retry / error */
   .data-error {
     background: var(--color-surface);
-    border: 1px solid var(--color-accent-warm);
+    border: 1px solid var(--color-danger);
     border-radius: var(--radius);
     padding: var(--space-md);
     text-align: center;
@@ -452,7 +550,9 @@
   footer.app-footer {
     text-align: center;
     color: var(--color-text-secondary);
-    font-size: 0.8rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
     padding: var(--space-lg) var(--space-md);
   }
 
@@ -501,10 +601,12 @@
   </div>
 
   <section class="panel" id="headline-panel">
+    <span class="section-label"><span class="n">00</span> / your numbers</span>
     <div id="headline-card"></div>
   </section>
 
   <section class="panel" id="spiral-panel">
+    <span class="section-label"><span class="n">01</span> / spiral</span>
     <h2>Your climate spiral</h2>
     <div id="spiral-wrap">
       <canvas id="spiral-canvas" role="img" aria-label="Spiral chart of monthly temperatures from birth year to present"></canvas>
@@ -524,12 +626,14 @@
   </section>
 
   <section class="panel" id="decades-panel">
+    <span class="section-label"><span class="n">02</span> / decades</span>
     <h2>Decades of your life</h2>
     <div class="decades-timeline" id="decades-timeline"></div>
-    <button id="generate-story-btn">Tell me the story of your climate decades ↗</button>
+    <button id="generate-story-btn">Tell me the story of your climate decades →</button>
   </section>
 
   <section class="panel" id="global-context-panel">
+    <span class="section-label"><span class="n">03</span> / global context</span>
     <h2>Your lifetime in global context</h2>
     <canvas id="global-chart" role="img" aria-label="Bar chart of global temperature anomaly by year"></canvas>
     <p class="source-cite">Source: NASA GISS Surface Temperature Analysis</p>
@@ -930,8 +1034,8 @@
     ctx.clearRect(0, 0, size, size);
     ctx.lineWidth = Math.max(1.5, size / 300);
 
-    const coolColor = "#3b6fa6";
-    const warmColor = "#c2563d";
+    const coolColor = "#7FB6C4";
+    const warmColor = "#FF8A65";
 
     years.forEach((year, yi) => {
       const months = byYear[year];
@@ -995,7 +1099,7 @@
           {
             label: "Jan–Feb mean",
             data: winters.map((w) => w.temp),
-            borderColor: "#3b6fa6",
+            borderColor: "#7FB6C4",
             borderDash: [6, 4],
             tension: 0.25,
             pointRadius: 0,
@@ -1003,7 +1107,7 @@
           {
             label: "Jul–Aug mean",
             data: summers.map((s) => s.temp),
-            borderColor: "#c2563d",
+            borderColor: "#FF8A65",
             tension: 0.25,
             pointRadius: 0,
           },
@@ -1015,8 +1119,8 @@
           annotation: undefined,
         },
         scales: {
-          x: { ticks: { color: "#9aa3ad" }, grid: { color: "#2a313a" } },
-          y: { ticks: { color: "#9aa3ad" }, grid: { color: "#2a313a" }, title: { display: true, text: "°C", color: "#9aa3ad" } },
+          x: { ticks: { color: "#6E665D" }, grid: { color: "#2B2724" } },
+          y: { ticks: { color: "#6E665D" }, grid: { color: "#2B2724" }, title: { display: true, text: "°C", color: "#6E665D" } },
         },
       },
     });
@@ -1055,7 +1159,7 @@
         datasets: [
           {
             data: relevant.map((d) => d.anomaly),
-            backgroundColor: relevant.map((d) => (d.anomaly >= 0 ? "#c2563d" : "#3b6fa6")),
+            backgroundColor: relevant.map((d) => (d.anomaly >= 0 ? "#FF8A65" : "#7FB6C4")),
           },
         ],
       },
@@ -1071,7 +1175,7 @@
         scales: {
           x: {
             ticks: {
-              color: "#9aa3ad",
+              color: "#6E665D",
               callback: function (val, idx) {
                 const year = relevant[idx] ? relevant[idx].year : "";
                 return year === birthYear ? `${year} ★` : year % 10 === 0 ? year : "";
@@ -1079,7 +1183,7 @@
             },
             grid: { display: false },
           },
-          y: { ticks: { color: "#9aa3ad" }, grid: { color: "#2a313a" }, title: { display: true, text: "°C anomaly", color: "#9aa3ad" } },
+          y: { ticks: { color: "#6E665D" }, grid: { color: "#2B2724" }, title: { display: true, text: "°C anomaly", color: "#6E665D" } },
         },
       },
     });
@@ -1181,11 +1285,11 @@ Respond ONLY with a valid JSON array, no preamble, no markdown fences:
     ctx.fillRect(0, 0, W, H);
 
     ctx.fillStyle = textPrimary;
-    ctx.font = "bold 44px sans-serif";
+    ctx.font = "bold 44px 'Space Grotesk', sans-serif";
     ctx.textAlign = "left";
     ctx.fillText("Born Into Change", 60, 90);
 
-    ctx.font = "26px sans-serif";
+    ctx.font = "26px 'Space Mono', monospace";
     ctx.fillStyle = textSecondary;
     ctx.fillText(`${city} · Born ${birthYear}`, 60, 135);
 
@@ -1199,10 +1303,10 @@ Respond ONLY with a valid JSON array, no preamble, no markdown fences:
     stats.forEach((s, i) => {
       const x = spacing * (i + 1);
       ctx.textAlign = "center";
-      ctx.font = "20px sans-serif";
+      ctx.font = "20px 'Space Mono', monospace";
       ctx.fillStyle = textSecondary;
       ctx.fillText(s.label, x, statY - 40);
-      ctx.font = "bold 46px sans-serif";
+      ctx.font = "bold 46px 'Space Grotesk', sans-serif";
       ctx.fillStyle = s.color;
       ctx.fillText(s.value, x, statY);
     });
@@ -1239,14 +1343,14 @@ Respond ONLY with a valid JSON array, no preamble, no markdown fences:
     });
 
     ctx.textAlign = "left";
-    ctx.font = "16px sans-serif";
+    ctx.font = "16px 'Space Mono', monospace";
     ctx.fillStyle = textSecondary;
     ctx.fillText("Data: Open-Meteo · NASA GISS · NOAA", 60, H - 64);
-    ctx.font = "14px sans-serif";
+    ctx.font = "14px 'Space Mono', monospace";
     ctx.fillText("An idea of epdupont@gmail.com — linkedin.com/in/emiledupont", 60, H - 40);
 
     ctx.textAlign = "right";
-    ctx.font = "16px sans-serif";
+    ctx.font = "16px 'Space Mono', monospace";
     ctx.fillText("born.into.change", W - 60, H - 40);
 
     canvas.toBlob((blob) => {
