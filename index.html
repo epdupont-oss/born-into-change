@@ -147,6 +147,17 @@
     font-size: 0.8rem;
   }
 
+  .project-signature {
+    margin-top: var(--space-sm);
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+  }
+
+  .project-signature a {
+    color: var(--color-text-secondary);
+    text-decoration: underline;
+  }
+
   /* ---------- Step 2: Loading screen ---------- */
   #loading-screen {
     display: flex;
@@ -471,6 +482,7 @@
     <p class="error-message" id="form-error"></p>
   </form>
   <p class="sources-footer">Data: Open-Meteo (ERA5) · NASA GISS · NOAA Mauna Loa CO₂</p>
+  <p class="project-signature">An idea of epdupont@gmail.com — get in touch at <a href="https://www.linkedin.com/in/emiledupont" target="_blank" rel="noopener">linkedin.com/in/emiledupont</a></p>
 </div>
 
 <div class="screen hidden" id="loading-screen">
@@ -1226,10 +1238,13 @@ Respond ONLY with a valid JSON array, no preamble, no markdown fences:
     ctx.textAlign = "left";
     ctx.font = "16px sans-serif";
     ctx.fillStyle = textSecondary;
-    ctx.fillText("Data: Open-Meteo · NASA GISS · NOAA", 60, H - 40);
+    ctx.fillText("Data: Open-Meteo · NASA GISS · NOAA", 60, H - 64);
+    ctx.font = "14px sans-serif";
+    ctx.fillText("An idea of epdupont@gmail.com — linkedin.com/in/emiledupont", 60, H - 40);
 
     ctx.textAlign = "right";
-    ctx.fillText(window.location.origin, W - 60, H - 40);
+    ctx.font = "16px sans-serif";
+    ctx.fillText("born.into.change", W - 60, H - 40);
 
     canvas.toBlob((blob) => {
       const url = URL.createObjectURL(blob);

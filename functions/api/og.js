@@ -185,8 +185,23 @@ function buildCard({ city, year, winterWarming, summerWarming, co2 }) {
               {
                 type: "div",
                 props: {
-                  style: { fontSize: 22, color: "#7d8590", fontStyle: "italic" },
-                  children: "Climate change, measured in your lifetime.",
+                  style: { display: "flex", flexDirection: "column" },
+                  children: [
+                    {
+                      type: "div",
+                      props: {
+                        style: { fontSize: 22, color: "#7d8590", fontStyle: "italic" },
+                        children: "Climate change, measured in your lifetime.",
+                      },
+                    },
+                    {
+                      type: "div",
+                      props: {
+                        style: { fontSize: 14, color: "#5c636b", marginTop: 8 },
+                        children: "An idea of epdupont@gmail.com — linkedin.com/in/emiledupont",
+                      },
+                    },
+                  ],
                 },
               },
               {
@@ -196,7 +211,7 @@ function buildCard({ city, year, winterWarming, summerWarming, co2 }) {
                   children: [
                     {
                       type: "div",
-                      props: { style: { fontSize: 20, color: "#c9cfd6" }, children: "borninto.change" },
+                      props: { style: { fontSize: 20, color: "#c9cfd6" }, children: "born.into.change" },
                     },
                     {
                       type: "div",
