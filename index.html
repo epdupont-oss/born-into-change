@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Born Into Change</title>
+<meta name="description" content="How much has the climate changed in your lifetime?" />
+
+<meta property="og:title" content="Born Into Change" />
+<meta property="og:description" content="How much has the climate changed in your lifetime?" />
+<meta property="og:image" content="/api/og" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<style>
+  :root {
+    --color-bg: #0d1117;
+    --color-surface: #161b22;
+    --color-text-primary: #f0f2f4;
+    --color-text-secondary: #9aa3ad;
+    --color-accent-warm: #c2563d;
+    --color-accent-cool: #3b6fa6;
+    --color-border: #2a313a;
+
+    --radius: 12px;
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2.5rem;
+    --space-xl: 4rem;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  a { color: var(--color-accent-cool); }
+
+  .screen {
+    min-height: 100vh;
+    width: 100%;
+  }
+
+  .hidden { display: none !important; }
+
+  /* ---------- Step 1: Input screen ---------- */
+  #input-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg);
+    text-align: center;
+  }
+
+  #input-screen h1 {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    margin: 0 0 var(--space-xs) 0;
+    letter-spacing: -0.02em;
+  }
+
+  #input-screen .subtitle {
+    color: var(--color-text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: var(--space-lg);
+  }
+
+  form#climate-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    text-align: left;
+  }
+
+  label {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+  }
+
+  input[type="text"],
+  input[type="number"] {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: var(--color-accent-cool);
+  }
+
+  button {
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .btn-primary {
+    background: var(--color-accent-warm);
+    color: var(--color-text-primary);
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.85rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: var(--space-xs);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .error-message {
+    color: var(--color-accent-warm);
+    font-size: 0.9rem;
+    min-height: 1.2em;
+  }
+
+  .sources-footer {
+    margin-top: var(--space-xl);
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+  }
+
+  /* ---------- Step 2: Loading screen ---------- */
+  #loading-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    text-align: center;
+  }
+
+  .progress-bar {
+    width: 220px;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--color-surface);
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    width: 40%;
+    background: var(--color-accent-cool);
+    border-radius: 4px;
+    animation: progress-slide 1.4s ease-in-out infinite;
+  }
+
+  @keyframes progress-slide {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(250%); }
+  }
+
+  .loading-status {
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    min-height: 1.5em;
+  }
+
+  /* ---------- Step 3: Results screen ---------- */
+  #results-screen {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .share-bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    flex-wrap: wrap;
+  }
+
+  .share-bar .city-year {
+    font-weight: 600;
+  }
+
+  .share-bar .actions {
+    display: flex;
+    gap: var(--space-xs);
+    position: relative;
+  }
+
+  .copy-tooltip {
+    position: absolute;
+    top: -2rem;
+    right: 0;
+    background: var(--color-accent-cool);
+    color: var(--color-text-primary);
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+
+  .copy-tooltip.visible { opacity: 1; }
+
+  section.panel {
+    padding: var(--space-lg) var(--space-md);
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  section.panel h2 {
+    font-size: 1.4rem;
+    margin-bottom: var(--space-xs);
+  }
+
+  .source-cite {
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+    margin-top: var(--space-xs);
+  }
+
+  /* 3a headline card */
+  #headline-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .stat-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+    justify-content: center;
+  }
+
+  .stat-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+  }
+
+  .stat-label {
+    color: var(--color-text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+  }
+
+  .stat-value.warm { color: var(--color-accent-warm); }
+  .stat-value.cool { color: var(--color-accent-cool); }
+
+  .headline-sentence {
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  /* 3b spiral + companion chart */
+  #spiral-wrap {
+    display: flex;
+    justify-content: center;
+  }
+
+  #spiral-canvas {
+    max-width: 600px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .spiral-legend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+    margin-top: var(--space-xs);
+  }
+
+  .legend-gradient-swatch {
+    width: 120px;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(to right, var(--color-accent-cool), var(--color-accent-warm));
+  }
+
+  .custom-legend {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xs);
+    font-size: 0.85rem;
+  }
+
+  .custom-legend .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .legend-swatch {
+    width: 18px;
+    height: 0;
+    border-top: 3px solid;
+  }
+
+  .legend-swatch.dashed { border-top-style: dashed; }
+
+  canvas#companion-chart, canvas#global-chart {
+    max-width: 100%;
+  }
+
+  /* 3c decades timeline */
+  .decades-timeline {
+    display: flex;
+    gap: var(--space-sm);
+    overflow-x: auto;
+    padding: var(--space-sm) 0;
+    scroll-snap-type: x proximity;
+  }
+
+  .decade-card {
+    flex: 0 0 200px;
+    scroll-snap-align: start;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-sm);
+  }
+
+  .decade-card .decade-label {
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .decade-card .decade-anomaly {
+    margin-top: 0.25rem;
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+  }
+
+  .decade-card .decade-anomaly.warm { color: var(--color-accent-warm); }
+  .decade-card .decade-anomaly.cool { color: var(--color-accent-cool); }
+
+  .narrative-skeleton {
+    margin-top: var(--space-sm);
+    height: 3.2em;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--color-border) 25%, var(--color-bg) 50%, var(--color-border) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s infinite;
+  }
+
+  @keyframes skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .narrative-text {
+    margin-top: var(--space-sm);
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    line-height: 1.45;
+  }
+
+  #generate-story-btn {
+    display: block;
+    margin: var(--space-sm) auto 0;
+    background: var(--color-accent-cool);
+    color: var(--color-text-primary);
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  #generate-story-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  /* 3d global context */
+  #global-context-panel canvas {
+    height: 220px !important;
+  }
+
+  /* retry / error */
+  .data-error {
+    background: var(--color-surface);
+    border: 1px solid var(--color-accent-warm);
+    border-radius: var(--radius);
+    padding: var(--space-md);
+    text-align: center;
+  }
+
+  .data-error button {
+    margin-top: var(--space-sm);
+  }
+
+  footer.app-footer {
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  @media (max-width: 768px) {
+    section.panel { padding: var(--space-md) var(--space-sm); }
+    .stat-row { gap: var(--space-md); }
+    .stat-value { font-size: 1.8rem; }
+    .decade-card { flex: 0 0 160px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="screen" id="input-screen">
+  <h1>Born Into Change</h1>
+  <p class="subtitle">How much has the climate changed in your lifetime?</p>
+  <form id="climate-form">
+    <div class="field">
+      <label for="city-input">Your city</label>
+      <input id="city-input" name="city" type="text" placeholder="e.g. Basel, Aosta, Reykjavik..." required />
+    </div>
+    <div class="field">
+      <label for="year-input">Your birth year</label>
+      <input id="year-input" name="year" type="number" min="1940" max="2010" placeholder="e.g. 1975" required />
+    </div>
+    <button type="submit" class="btn-primary">Show my climate</button>
+    <p class="error-message" id="form-error"></p>
+  </form>
+  <p class="sources-footer">Data: Open-Meteo (ERA5) · NASA GISS · NOAA Mauna Loa CO₂</p>
+</div>
+
+<div class="screen hidden" id="loading-screen">
+  <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+  <p class="loading-status" id="loading-status">Locating...</p>
+</div>
+
+<div class="screen hidden" id="results-screen">
+  <div class="share-bar">
+    <span class="city-year" id="share-city-year"></span>
+    <div class="actions">
+      <button class="btn-secondary" id="share-btn">Share my climate</button>
+      <button class="btn-secondary" id="download-btn">Download card</button>
+      <span class="copy-tooltip" id="copy-tooltip">Link copied!</span>
+    </div>
+  </div>
+
+  <section class="panel" id="headline-panel">
+    <div id="headline-card"></div>
+  </section>
+
+  <section class="panel" id="spiral-panel">
+    <h2>Your climate spiral</h2>
+    <div id="spiral-wrap">
+      <canvas id="spiral-canvas" role="img" aria-label="Spiral chart of monthly temperatures from birth year to present"></canvas>
+    </div>
+    <div class="spiral-legend">
+      <span>Birth year</span>
+      <div class="legend-gradient-swatch"></div>
+      <span>Today</span>
+    </div>
+
+    <div class="custom-legend">
+      <span class="legend-item"><span class="legend-swatch dashed" style="border-color: var(--color-accent-cool);"></span>Jan–Feb mean</span>
+      <span class="legend-item"><span class="legend-swatch" style="border-color: var(--color-accent-warm);"></span>Jul–Aug mean</span>
+    </div>
+    <canvas id="companion-chart" role="img" aria-label="Line chart of winter and summer mean temperatures by year"></canvas>
+    <p class="source-cite">Source: Open-Meteo Historical Climate API (ERA5 reanalysis)</p>
+  </section>
+
+  <section class="panel" id="decades-panel">
+    <h2>Decades of your life</h2>
+    <div class="decades-timeline" id="decades-timeline"></div>
+    <button id="generate-story-btn">Tell me the story of your climate decades ↗</button>
+  </section>
+
+  <section class="panel" id="global-context-panel">
+    <h2>Your lifetime in global context</h2>
+    <canvas id="global-chart" role="img" aria-label="Bar chart of global temperature anomaly by year"></canvas>
+    <p class="source-cite">Source: NASA GISS Surface Temperature Analysis</p>
+  </section>
+
+  <footer class="app-footer">Born Into Change — built on Open-Meteo, NASA GISS, and NOAA public climate data.</footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  const CURRENT_YEAR_DATA_CUTOFF = 2024;
+
+  const els = {
+    inputScreen: document.getElementById("input-screen"),
+    loadingScreen: document.getElementById("loading-screen"),
+    resultsScreen: document.getElementById("results-screen"),
+    form: document.getElementById("climate-form"),
+    cityInput: document.getElementById("city-input"),
+    yearInput: document.getElementById("year-input"),
+    formError: document.getElementById("form-error"),
+    loadingStatus: document.getElementById("loading-status"),
+    shareCityYear: document.getElementById("share-city-year"),
+    shareBtn: document.getElementById("share-btn"),
+    downloadBtn: document.getElementById("download-btn"),
+    copyTooltip: document.getElementById("copy-tooltip"),
+    headlineCard: document.getElementById("headline-card"),
+    spiralCanvas: document.getElementById("spiral-canvas"),
+    companionChart: document.getElementById("companion-chart"),
+    decadesTimeline: document.getElementById("decades-timeline"),
+    generateStoryBtn: document.getElementById("generate-story-btn"),
+    globalChart: document.getElementById("global-chart"),
+  };
+
+  let appState = null; // populated after successful pipeline run
+
+  function showScreen(name) {
+    els.inputScreen.classList.toggle("hidden", name !== "input");
+    els.loadingScreen.classList.toggle("hidden", name !== "loading");
+    els.resultsScreen.classList.toggle("hidden", name !== "results");
+  }
+
+  function setLoadingStatus(text) {
+    els.loadingStatus.textContent = text;
+  }
+
+  // ---------------------------------------------------------------------
+  // Data pipeline
+  // ---------------------------------------------------------------------
+
+  async function geocodeCity(cityName) {
+    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=en`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("geocoding-failed");
+    const data = await res.json();
+    if (!data.results || data.results.length === 0) throw new Error("city-not-found");
+    const r = data.results[0];
+    return { name: r.name, country: r.country, latitude: r.latitude, longitude: r.longitude };
+  }
+
+  async function fetchLocalClimate(lat, lon, birthYear) {
+    // Open-Meteo's Historical Weather API serves ERA5 reanalysis as daily
+    // values; it has no native monthly aggregation, so we average client-side.
+    const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${birthYear}-01-01&end_date=${CURRENT_YEAR_DATA_CUTOFF}-12-31&daily=temperature_2m_mean&timezone=UTC`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("climate-fetch-failed");
+    const data = await res.json();
+    const times = data.daily && data.daily.time;
+    const temps = data.daily && data.daily.temperature_2m_mean;
+    if (!times || !temps) throw new Error("climate-fetch-failed");
+
+    const monthlySums = {};
+    times.forEach((t, i) => {
+      const temp = temps[i];
+      if (temp === null || temp === undefined) return;
+      const [year, month] = t.split("-").map(Number);
+      const key = `${year}-${month}`;
+      if (!monthlySums[key]) monthlySums[key] = { year, month, sum: 0, count: 0 };
+      monthlySums[key].sum += temp;
+      monthlySums[key].count += 1;
+    });
+
+    return Object.values(monthlySums).map(({ year, month, sum, count }) => ({
+      year,
+      month,
+      temp: sum / count,
+    }));
+  }
+
+  function computeSeasonalSeries(monthlyData) {
+    const byYear = {};
+    monthlyData.forEach(({ year, month, temp }) => {
+      if (temp === null || temp === undefined) return;
+      if (!byYear[year]) byYear[year] = {};
+      byYear[year][month] = temp;
+    });
+
+    const winters = [];
+    const summers = [];
+    Object.keys(byYear)
+      .map(Number)
+      .sort((a, b) => a - b)
+      .forEach((year) => {
+        const m = byYear[year];
+        if (m[1] !== undefined && m[2] !== undefined) {
+          winters.push({ year, temp: (m[1] + m[2]) / 2 });
+        }
+        if (m[7] !== undefined && m[8] !== undefined) {
+          summers.push({ year, temp: (m[7] + m[8]) / 2 });
+        }
+      });
+
+    return { winters, summers, byYear };
+  }
+
+  function meanOf(arr) {
+    return arr.reduce((s, v) => s + v, 0) / arr.length;
+  }
+
+  function computeHeadlineStats(seasonalSeries) {
+    const { winters, summers } = seasonalSeries;
+    const winterWarming = meanOf(winters.slice(-5).map((d) => d.temp)) - meanOf(winters.slice(0, 5).map((d) => d.temp));
+    const summerWarming = meanOf(summers.slice(-5).map((d) => d.temp)) - meanOf(summers.slice(0, 5).map((d) => d.temp));
+    return { winterWarming, summerWarming };
+  }
+
+  async function fetchGlobalAnomaly() {
+    const res = await fetch("/api/gistemp");
+    if (!res.ok) throw new Error("gistemp-fetch-failed");
+    const text = await res.text();
+    const lines = text.split("\n");
+    const results = [];
+    let headerCols = null;
+    for (const line of lines) {
+      const cols = line.split(",");
+      if (/^\d{4}$/.test(cols[0].trim())) {
+        if (!headerCols) headerCols = cols; // not strictly needed, J-D is fixed col index 13
+        const year = Number(cols[0].trim());
+        const jdRaw = cols[13] !== undefined ? cols[13].trim() : "";
+        const anomaly = Number(jdRaw);
+        if (jdRaw && jdRaw !== "***" && !Number.isNaN(anomaly)) {
+          results.push({ year, anomaly });
+        }
+      }
+    }
+    return results;
+  }
+
+  async function fetchCO2Data() {
+    const res = await fetch("https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_annmean_mlo.txt");
+    if (!res.ok) throw new Error("co2-fetch-failed");
+    const text = await res.text();
+    const lines = text.split("\n");
+    const results = [];
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("#")) continue;
+      const cols = trimmed.split(/\s+/);
+      const year = Number(cols[0]);
+      const co2 = Number(cols[1]);
+      if (!Number.isNaN(year) && !Number.isNaN(co2)) {
+        results.push({ year, co2 });
+      }
+    }
+    return results;
+  }
+
+  function computeDecadeAnomalies(seasonalSeries, birthYear) {
+    const { byYear } = seasonalSeries;
+    const yearMeans = {};
+    Object.keys(byYear).forEach((y) => {
+      const months = Object.values(byYear[y]);
+      yearMeans[y] = meanOf(months);
+    });
+
+    const baselineDecadeStart = Math.floor(birthYear / 10) * 10;
+    const decadeMean = (start) => {
+      const vals = [];
+      for (let y = start; y < start + 10; y++) {
+        if (yearMeans[y] !== undefined) vals.push(yearMeans[y]);
+      }
+      return vals.length ? meanOf(vals) : null;
+    };
+
+    const baseline = decadeMean(baselineDecadeStart);
+    const decades = [];
+    for (let start = baselineDecadeStart; start <= CURRENT_YEAR_DATA_CUTOFF; start += 10) {
+      const mean = decadeMean(start);
+      decades.push({
+        label: `${start}s`,
+        start,
+        anomaly: mean !== null && baseline !== null ? mean - baseline : null,
+      });
+    }
+    return decades;
+  }
+
+  function updateShareState(cityName, birthYear, stats) {
+    const params = new URLSearchParams({ city: cityName, year: String(birthYear) });
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.pushState({}, "", newUrl);
+
+    const fullUrl = window.location.origin + newUrl;
+    const summerWarming = stats.summerWarming.toFixed(1);
+    const winterWarming = stats.winterWarming.toFixed(1);
+    const co2Rise = Math.round(stats.co2Rise);
+
+    setMeta("og:title", `Born Into Change — ${cityName}, ${birthYear}`);
+    setMeta("og:description", `In ${cityName}, summers have warmed by ${summerWarming}°C since ${birthYear}.`);
+    setMeta(
+      "og:image",
+      `/api/og?city=${encodeURIComponent(cityName)}&year=${birthYear}&winterWarming=${winterWarming}&summerWarming=${summerWarming}&co2=${co2Rise}`
+    );
+    setMeta("og:url", fullUrl);
+    setMeta("twitter:card", "summary_large_image");
+  }
+
+  function setMeta(property, content) {
+    let el = document.querySelector(`meta[property="${property}"]`) || document.querySelector(`meta[name="${property}"]`);
+    if (!el) {
+      el = document.createElement("meta");
+      el.setAttribute(property === "twitter:card" ? "name" : "property", property);
+      document.head.appendChild(el);
+    }
+    el.setAttribute("content", content);
+  }
+
+  // ---------------------------------------------------------------------
+  // Pipeline orchestration
+  // ---------------------------------------------------------------------
+
+  async function runPipeline(cityName, birthYear) {
+    showScreen("loading");
+    setLoadingStatus(`Locating ${cityName}...`);
+
+    let location;
+    try {
+      location = await geocodeCity(cityName);
+    } catch (err) {
+      showInputError(err.message === "city-not-found" ? "City not found — try a different spelling" : "Could not reach the geocoding service — please try again");
+      return;
+    }
+
+    setLoadingStatus(`Fetching climate records since ${birthYear}...`);
+    let monthlyData;
+    try {
+      monthlyData = await fetchLocalClimate(location.latitude, location.longitude, birthYear);
+    } catch (err) {
+      showDataError("Open-Meteo Historical Climate API", () => runPipeline(cityName, birthYear));
+      return;
+    }
+
+    setLoadingStatus("Loading global context...");
+    let globalAnomaly, co2Data;
+    try {
+      [globalAnomaly, co2Data] = await Promise.all([fetchGlobalAnomaly(), fetchCO2Data()]);
+    } catch (err) {
+      showDataError("NASA GISTEMP / NOAA CO₂", () => runPipeline(cityName, birthYear));
+      return;
+    }
+
+    const seasonalSeries = computeSeasonalSeries(monthlyData);
+    if (seasonalSeries.winters.length < 5 || seasonalSeries.summers.length < 5) {
+      showDataError("Open-Meteo Historical Climate API (insufficient data for this location)", () => runPipeline(cityName, birthYear));
+      return;
+    }
+
+    const headlineStats = computeHeadlineStats(seasonalSeries);
+    const co2AtBirth = co2Data.find((d) => d.year === birthYear) || co2Data[0];
+    const co2Latest = co2Data[co2Data.length - 1];
+    const co2Rise = co2Latest.co2 - co2AtBirth.co2;
+    const decades = computeDecadeAnomalies(seasonalSeries, birthYear);
+
+    appState = {
+      city: location.name,
+      country: location.country,
+      birthYear,
+      seasonalSeries,
+      headlineStats: { ...headlineStats, co2Rise },
+      globalAnomaly,
+      decades,
+    };
+
+    updateShareState(location.name, birthYear, appState.headlineStats);
+    showScreen("results");
+    renderResults();
+  }
+
+  function showInputError(message) {
+    showScreen("input");
+    els.formError.textContent = message;
+  }
+
+  function showDataError(sourceName, retryFn) {
+    showScreen("results");
+    els.resultsScreen.innerHTML = "";
+    const wrap = document.createElement("section");
+    wrap.className = "panel";
+    wrap.innerHTML = `
+      <div class="data-error">
+        <p>Could not load data from <strong>${sourceName}</strong>. Please try again.</p>
+        <button class="btn-primary" id="retry-btn">Retry</button>
+      </div>
+    `;
+    els.resultsScreen.appendChild(wrap);
+    document.getElementById("retry-btn").addEventListener("click", retryFn);
+  }
+
+  // ---------------------------------------------------------------------
+  // Rendering
+  // ---------------------------------------------------------------------
+
+  function renderResults() {
+    const { city, birthYear, headlineStats } = appState;
+    els.shareCityYear.textContent = `${city} · ${birthYear}`;
+    renderHeadlineCard();
+    renderSpiral();
+    renderCompanionChart();
+    renderDecades();
+    renderGlobalChart();
+  }
+
+  function renderHeadlineCard() {
+    const { city, birthYear, headlineStats } = appState;
+    const winter = headlineStats.winterWarming.toFixed(1);
+    const summer = headlineStats.summerWarming.toFixed(1);
+    const co2 = Math.round(headlineStats.co2Rise);
+
+    els.headlineCard.innerHTML = `
+      <div class="stat-row">
+        <div class="stat-block">
+          <span class="stat-label">Winter warming</span>
+          <span class="stat-value cool">+${winter}°C</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-label">Summer warming</span>
+          <span class="stat-value warm">+${summer}°C</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-label">CO₂ rise</span>
+          <span class="stat-value">+${co2} ppm</span>
+        </div>
+      </div>
+      <p class="headline-sentence">In ${city}, winters have warmed by ${winter}°C and summers by ${summer}°C since ${birthYear}. Globally, CO₂ has risen by ${co2} ppm over the same period.</p>
+    `;
+  }
+
+  function lerpColor(c1, c2, t) {
+    const a = parseInt(c1.slice(1), 16);
+    const b = parseInt(c2.slice(1), 16);
+    const ar = (a >> 16) & 255, ag = (a >> 8) & 255, ab = a & 255;
+    const br = (b >> 16) & 255, bg = (b >> 8) & 255, bb = b & 255;
+    const r = Math.round(ar + (br - ar) * t);
+    const g = Math.round(ag + (bg - ag) * t);
+    const bl = Math.round(ab + (bb - ab) * t);
+    return `rgb(${r}, ${g}, ${bl})`;
+  }
+
+  function renderSpiral() {
+    const canvas = els.spiralCanvas;
+    const cssSize = canvas.parentElement.clientWidth;
+    const size = Math.min(cssSize, 600);
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    canvas.style.width = size + "px";
+    canvas.style.height = size + "px";
+    const ctx = canvas.getContext("2d");
+    ctx.scale(dpr, dpr);
+
+    const cx = size / 2;
+    const cy = size / 2;
+    const maxRadius = size * 0.42;
+    const minRadius = size * 0.12;
+
+    const { byYear } = appState.seasonalSeries;
+    const years = Object.keys(byYear).map(Number).sort((a, b) => a - b);
+    if (years.length === 0) return;
+
+    let minTemp = Infinity, maxTemp = -Infinity;
+    years.forEach((y) => {
+      Object.values(byYear[y]).forEach((t) => {
+        if (t < minTemp) minTemp = t;
+        if (t > maxTemp) maxTemp = t;
+      });
+    });
+    const tempRange = maxTemp - minTemp || 1;
+
+    const radiusForTemp = (temp) => {
+      const norm = (temp - minTemp) / tempRange;
+      return minRadius + norm * (maxRadius - minRadius);
+    };
+
+    ctx.clearRect(0, 0, size, size);
+    ctx.lineWidth = Math.max(1.5, size / 300);
+
+    const coolColor = "#3b6fa6";
+    const warmColor = "#c2563d";
+
+    years.forEach((year, yi) => {
+      const months = byYear[year];
+      const t = years.length > 1 ? yi / (years.length - 1) : 0;
+      const color = lerpColor(coolColor, warmColor, t);
+      ctx.strokeStyle = color;
+      ctx.beginPath();
+      let first = true;
+      for (let m = 1; m <= 12; m++) {
+        if (months[m] === undefined) continue;
+        const angle = ((m - 1) / 12) * Math.PI * 2 - Math.PI / 2;
+        const r = radiusForTemp(months[m]);
+        const x = cx + Math.cos(angle) * r;
+        const y = cy + Math.sin(angle) * r;
+        if (first) {
+          ctx.moveTo(x, y);
+          first = false;
+        } else {
+          ctx.lineTo(x, y);
+        }
+      }
+      ctx.closePath();
+      ctx.stroke();
+    });
+
+    // month labels
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--color-text-secondary").trim();
+    ctx.font = `${Math.max(10, size / 45)}px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const labels = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
+    labels.forEach((label, i) => {
+      const angle = (i / 12) * Math.PI * 2 - Math.PI / 2;
+      const r = maxRadius + size * 0.06;
+      const x = cx + Math.cos(angle) * r;
+      const y = cy + Math.sin(angle) * r;
+      ctx.fillText(label, x, y);
+    });
+
+    // birth year / current year labels
+    ctx.fillStyle = coolColor;
+    ctx.font = `bold ${Math.max(11, size / 40)}px sans-serif`;
+    ctx.fillText(String(years[0]), cx, cy - minRadius / 2);
+    ctx.fillStyle = warmColor;
+    ctx.fillText(String(years[years.length - 1]), cx, cy + minRadius / 2 + 14);
+  }
+
+  let companionChartInstance = null;
+  function renderCompanionChart() {
+    const { winters, summers } = appState.seasonalSeries;
+    const years = winters.map((w) => w.year);
+
+    if (companionChartInstance) companionChartInstance.destroy();
+    const ctx = els.companionChart.getContext("2d");
+
+    companionChartInstance = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: years,
+        datasets: [
+          {
+            label: "Jan–Feb mean",
+            data: winters.map((w) => w.temp),
+            borderColor: "#3b6fa6",
+            borderDash: [6, 4],
+            tension: 0.25,
+            pointRadius: 0,
+          },
+          {
+            label: "Jul–Aug mean",
+            data: summers.map((s) => s.temp),
+            borderColor: "#c2563d",
+            tension: 0.25,
+            pointRadius: 0,
+          },
+        ],
+      },
+      options: {
+        plugins: {
+          legend: { display: false },
+          annotation: undefined,
+        },
+        scales: {
+          x: { ticks: { color: "#9aa3ad" }, grid: { color: "#2a313a" } },
+          y: { ticks: { color: "#9aa3ad" }, grid: { color: "#2a313a" }, title: { display: true, text: "°C", color: "#9aa3ad" } },
+        },
+      },
+    });
+  }
+
+  function renderDecades() {
+    const { decades } = appState;
+    els.decadesTimeline.innerHTML = "";
+    decades.forEach((d) => {
+      const card = document.createElement("div");
+      card.className = "decade-card";
+      card.dataset.decadeLabel = d.label;
+      const anomalyClass = d.anomaly === null ? "" : d.anomaly >= 0 ? "warm" : "cool";
+      const anomalyText = d.anomaly === null ? "—" : `${d.anomaly >= 0 ? "+" : ""}${d.anomaly.toFixed(1)}°C`;
+      card.innerHTML = `
+        <div class="decade-label">${d.label}</div>
+        <div class="decade-anomaly ${anomalyClass}">${anomalyText}</div>
+        <div class="narrative-skeleton"></div>
+      `;
+      els.decadesTimeline.appendChild(card);
+    });
+  }
+
+  let globalChartInstance = null;
+  function renderGlobalChart() {
+    const { globalAnomaly, birthYear } = appState;
+    const relevant = globalAnomaly.filter((d) => d.year >= 1940);
+
+    if (globalChartInstance) globalChartInstance.destroy();
+    const ctx = els.globalChart.getContext("2d");
+
+    globalChartInstance = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: relevant.map((d) => d.year),
+        datasets: [
+          {
+            data: relevant.map((d) => d.anomaly),
+            backgroundColor: relevant.map((d) => (d.anomaly >= 0 ? "#c2563d" : "#3b6fa6")),
+          },
+        ],
+      },
+      options: {
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `${ctx.label}: ${ctx.raw >= 0 ? "+" : ""}${ctx.raw.toFixed(1)}°C`,
+            },
+          },
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: "#9aa3ad",
+              callback: function (val, idx) {
+                const year = relevant[idx] ? relevant[idx].year : "";
+                return year === birthYear ? `${year} ★` : year % 10 === 0 ? year : "";
+              },
+            },
+            grid: { display: false },
+          },
+          y: { ticks: { color: "#9aa3ad" }, grid: { color: "#2a313a" }, title: { display: true, text: "°C anomaly", color: "#9aa3ad" } },
+        },
+      },
+    });
+  }
+
+  // ---------------------------------------------------------------------
+  // AI narrative ("Tell me the story of your climate decades")
+  // ---------------------------------------------------------------------
+
+  async function generateStory() {
+    els.generateStoryBtn.disabled = true;
+    els.generateStoryBtn.textContent = "Generating your climate story...";
+
+    const { city, country, birthYear, decades } = appState;
+    const decadeSummary = decades.map((d) => ({
+      decade: d.label,
+      anomalyVsBirthDecade: d.anomaly === null ? null : Number(d.anomaly.toFixed(1)),
+    }));
+
+    const systemPrompt =
+      "You are a calm, scientifically accurate climate communicator. Your role is to help people understand how climate change has personally affected their region over their lifetime. You cite only real, well-documented events. You never speculate or exaggerate. You write in a warm, clear, accessible tone — like a knowledgeable friend explaining the science, not an activist or alarmist. If you are uncertain about a specific local event, say so briefly and focus on what is well-established.";
+
+    const userPrompt = `The user was born in ${birthYear} in ${city}, ${country}.
+
+Here is the local temperature data by decade, relative to their birth-year baseline:
+${JSON.stringify(decadeSummary, null, 2)}
+
+Please write a short narrative for each decade of their life (${decades.map((d) => d.label).join(", ")}), focusing on climate-related events, trends, or changes that occurred in or near ${country}. Each decade entry should be 2-3 sentences maximum.
+
+Respond ONLY with a valid JSON array, no preamble, no markdown fences:
+[
+  { "decade": "1970s", "narrative": "..." },
+  { "decade": "1980s", "narrative": "..." }
+]`;
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt },
+          ],
+        }),
+      });
+      if (!res.ok) throw new Error("chat-failed");
+      const data = await res.json();
+      const raw = data.choices[0].message.content;
+      const narratives = JSON.parse(raw);
+
+      narratives.forEach((n) => {
+        const card = els.decadesTimeline.querySelector(`[data-decade-label="${n.decade}"]`);
+        if (!card) return;
+        const skeleton = card.querySelector(".narrative-skeleton");
+        if (skeleton) skeleton.remove();
+        const p = document.createElement("p");
+        p.className = "narrative-text";
+        p.textContent = n.narrative;
+        card.appendChild(p);
+      });
+
+      els.generateStoryBtn.classList.add("hidden");
+    } catch (err) {
+      els.generateStoryBtn.disabled = false;
+      els.generateStoryBtn.textContent = "Tell me the story of your climate decades ↗";
+    }
+  }
+
+  // ---------------------------------------------------------------------
+  // Share bar actions
+  // ---------------------------------------------------------------------
+
+  async function shareLink() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      els.copyTooltip.classList.add("visible");
+      setTimeout(() => els.copyTooltip.classList.remove("visible"), 1800);
+    } catch (err) {
+      // clipboard API unavailable; no-op fallback
+    }
+  }
+
+  function downloadCard() {
+    const { city, birthYear, headlineStats } = appState;
+    const W = 1200, H = 627;
+    const canvas = document.createElement("canvas");
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext("2d");
+
+    const bg = getComputedStyle(document.documentElement).getPropertyValue("--color-bg").trim();
+    const textPrimary = getComputedStyle(document.documentElement).getPropertyValue("--color-text-primary").trim();
+    const textSecondary = getComputedStyle(document.documentElement).getPropertyValue("--color-text-secondary").trim();
+    const warm = getComputedStyle(document.documentElement).getPropertyValue("--color-accent-warm").trim();
+    const cool = getComputedStyle(document.documentElement).getPropertyValue("--color-accent-cool").trim();
+
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.fillStyle = textPrimary;
+    ctx.font = "bold 44px sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText("Born Into Change", 60, 90);
+
+    ctx.font = "26px sans-serif";
+    ctx.fillStyle = textSecondary;
+    ctx.fillText(`${city} · Born ${birthYear}`, 60, 135);
+
+    const stats = [
+      { label: "Winters", value: `+${headlineStats.winterWarming.toFixed(1)}°C`, color: cool },
+      { label: "Summers", value: `+${headlineStats.summerWarming.toFixed(1)}°C`, color: warm },
+      { label: "CO₂ rise", value: `+${Math.round(headlineStats.co2Rise)} ppm`, color: textPrimary },
+    ];
+    const statY = 320;
+    const spacing = W / (stats.length + 1);
+    stats.forEach((s, i) => {
+      const x = spacing * (i + 1);
+      ctx.textAlign = "center";
+      ctx.font = "20px sans-serif";
+      ctx.fillStyle = textSecondary;
+      ctx.fillText(s.label, x, statY - 40);
+      ctx.font = "bold 46px sans-serif";
+      ctx.fillStyle = s.color;
+      ctx.fillText(s.value, x, statY);
+    });
+
+    // simplified spiral, bottom-right
+    const spiralCx = W - 150;
+    const spiralCy = H - 150;
+    const { byYear } = appState.seasonalSeries;
+    const years = Object.keys(byYear).map(Number).sort((a, b) => a - b);
+    let minTemp = Infinity, maxTemp = -Infinity;
+    years.forEach((y) => Object.values(byYear[y]).forEach((t) => {
+      if (t < minTemp) minTemp = t;
+      if (t > maxTemp) maxTemp = t;
+    }));
+    const tempRange = maxTemp - minTemp || 1;
+    years.forEach((year, yi) => {
+      const months = byYear[year];
+      const t = years.length > 1 ? yi / (years.length - 1) : 0;
+      ctx.strokeStyle = lerpColor(cool, warm, t);
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      let first = true;
+      for (let m = 1; m <= 12; m++) {
+        if (months[m] === undefined) continue;
+        const angle = ((m - 1) / 12) * Math.PI * 2 - Math.PI / 2;
+        const norm = (months[m] - minTemp) / tempRange;
+        const r = 25 + norm * 90;
+        const x = spiralCx + Math.cos(angle) * r;
+        const y = spiralCy + Math.sin(angle) * r;
+        if (first) { ctx.moveTo(x, y); first = false; } else { ctx.lineTo(x, y); }
+      }
+      ctx.closePath();
+      ctx.stroke();
+    });
+
+    ctx.textAlign = "left";
+    ctx.font = "16px sans-serif";
+    ctx.fillStyle = textSecondary;
+    ctx.fillText("Data: Open-Meteo · NASA GISS · NOAA", 60, H - 40);
+
+    ctx.textAlign = "right";
+    ctx.fillText(window.location.origin, W - 60, H - 40);
+
+    canvas.toBlob((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `born-into-change-${city.toLowerCase().replace(/\s+/g, "-")}-${birthYear}.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }, "image/png");
+  }
+
+  // ---------------------------------------------------------------------
+  // Wiring
+  // ---------------------------------------------------------------------
+
+  els.form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    els.formError.textContent = "";
+    const city = els.cityInput.value.trim();
+    const year = Number(els.yearInput.value);
+    if (!city) {
+      els.formError.textContent = "Please enter a city.";
+      return;
+    }
+    if (!year || year < 1940 || year > 2010) {
+      els.formError.textContent = "Please enter a birth year between 1940 and 2010.";
+      return;
+    }
+    runPipeline(city, year);
+  });
+
+  els.shareBtn.addEventListener("click", shareLink);
+  els.downloadBtn.addEventListener("click", downloadCard);
+  els.generateStoryBtn.addEventListener("click", generateStory);
+
+  window.addEventListener("resize", () => {
+    if (appState) renderSpiral();
+  });
+
+  // Bootstrap: skip to results if URL already carries city/year
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlCity = urlParams.get("city");
+  const urlYear = Number(urlParams.get("year"));
+  if (urlCity && urlYear) {
+    els.cityInput.value = urlCity;
+    els.yearInput.value = urlYear;
+    runPipeline(urlCity, urlYear);
+  } else {
+    showScreen("input");
+  }
+})();
+</script>
+
+</body>
+</html>

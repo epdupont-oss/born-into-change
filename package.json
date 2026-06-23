@@ -1,0 +1,10 @@
+{
+  "name": "born-into-change",
+  "private": true,
+  "description": "Pages Functions dependencies for /api/og (Satori + resvg). The frontend itself has no build step.",
+  "dependencies": {
+    "satori": "^0.10.13",
+    "yoga-wasm-web": "^0.3.3",
+    "@resvg/resvg-wasm": "^2.6.2"
+  }
+}
