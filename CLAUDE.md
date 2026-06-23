@@ -14,7 +14,12 @@ data plus an optional AI-generated narrative layer.
 ## Deployment
 
 - Cloudflare Pages → connect GitHub repo
-- No build command, output directory `/`
+- Output directory `/`. The frontend itself needs no build step, but
+  **Build command must be set to `npm install`** (not left blank) — Pages
+  skips dependency installation entirely if no build command is set, which
+  breaks `/api/og`'s npm-bundled `satori`/`resvg`/`yoga-wasm-web` imports
+  (confirmed: blank build command → no `node_modules` → bundling fails with
+  "Could not resolve" / ENOENT errors at deploy time)
 - Set env var `GROQ_API_KEY` in the Pages dashboard (Settings → Environment
   variables) — required for `/api/chat`
 
@@ -85,8 +90,14 @@ be supplied in a future session — it should be a drop-in replacement of the
   It imports their `.wasm` files directly (`import wasm from
   "../../node_modules/.../foo.wasm"`); Cloudflare Pages' function bundler
   handles this natively. Cloudflare Pages must run `npm install` during the
-  build for this to work — don't disable install in project settings. The
-  frontend itself still has zero build step.
+  build for this to work — set Build command to `npm install` in project
+  settings (see Deployment above). The frontend itself still has zero build
+  step.
+- Dynamic `import("https://esm.sh/...")` at runtime was tried as an
+  alternative to npm bundling (to dodge the build-command requirement) and
+  **does not work reliably** — it failed consistently under a clean
+  `wrangler pages dev` with "No such module" even though `fetch()` to the
+  same URL succeeds. Don't reintroduce this pattern; use the npm imports.
 - `climate-api.open-meteo.com/v1/climate` (with `models=ERA5`) does **not**
   work — that endpoint is for CMIP6 climate-projection models, not ERA5
   reanalysis, and rejects `ERA5` as an invalid model value. The actual ERA5

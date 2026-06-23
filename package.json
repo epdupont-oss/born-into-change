@@ -1,7 +1,7 @@
 {
   "name": "born-into-change",
   "private": true,
-  "description": "Pages Functions dependencies for /api/og (Satori + resvg). The frontend itself has no build step.",
+  "description": "Pages Functions dependencies for /api/og (Satori + resvg). The frontend itself has no build step. Cloudflare's Pages project must have its Build command set to `npm install` for these to be available when Functions are bundled.",
   "dependencies": {
     "satori": "^0.10.13",
     "yoga-wasm-web": "^0.3.3",

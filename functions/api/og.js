@@ -9,6 +9,10 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "GET, OPTIONS",
 };
 
+// Requires `npm install` to have run before Cloudflare bundles Functions
+// (the project's Pages build command must be set to `npm install` — see
+// CLAUDE.md). Dynamic import() of remote esm.sh URLs at runtime was tried
+// and does NOT work reliably in workerd; this is the supported approach.
 let wasmReady = null;
 async function ensureWasmInitialized() {
   if (!wasmReady) {
