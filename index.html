@@ -287,10 +287,30 @@
     flex-wrap: wrap;
   }
 
+  .share-bar-id {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+  }
+
   .share-bar .city-year {
     font-family: var(--font-mono);
     font-weight: 700;
     letter-spacing: 0.02em;
+  }
+
+  .restart-link {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color var(--ease-fast);
+  }
+
+  .restart-link:hover {
+    color: var(--color-text-primary);
   }
 
   .share-bar .actions {
@@ -592,7 +612,10 @@
 
 <div class="screen hidden" id="results-screen">
   <div class="share-bar">
-    <span class="city-year" id="share-city-year"></span>
+    <div class="share-bar-id">
+      <span class="city-year" id="share-city-year"></span>
+      <a class="restart-link" href="/">try another lifetime →</a>
+    </div>
     <div class="actions">
       <button class="btn-secondary" id="share-btn">Share my climate</button>
       <button class="btn-secondary" id="download-btn">Download card</button>
